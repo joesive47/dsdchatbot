@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Excel - DSD Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .upload-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 3rem;
+            margin: 1.5rem 0;
+            background: rgba(102, 126, 234, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .file-upload-area.dragover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #4285f4;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .template-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .template-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .excel-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 400px;
+        }
+
+        .excel-table th,
+        .excel-table td {
+            border: 1px solid #dee2e6;
+            padding: 0.8rem;
+            text-align: left;
+        }
+
+        .excel-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .excel-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .file-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .requirements {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .requirements h4 {
+            color: #856404;
+            margin-bottom: 1rem;
+        }
+
+        .requirements ul {
+            margin-left: 1.5rem;
+            color: #856404;
+        }
+
+        .requirements li {
+            margin-bottom: 0.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .upload-card {
+                padding: 1.5rem;
+            }
+
+            .file-upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .upload-icon {
+                font-size: 3rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.show {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-card">
+            <div class="header">
+                <h1>📊 Upload Excel File</h1>
+                <div class="breadcrumb">
+                    <a href="/admin">🏠 Dashboard</a> > 
+                    📊 Upload Excel
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success">
+                            ✅ {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <form method="POST" action="/upload_excel" enctype="multipart/form-data" id="uploadForm">
+                    <div class="form-group">
+                        <label for="category_id">📁 เลือกหมวดหมู่:</label>
+                        <select class="form-control" name="category_id" id="category_id" required>
+                            <option value="">-- เลือกหมวดหมู่ที่ต้องการ --</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">คลิกเพื่อเลือกไฟล์ Excel</div>
+                        <div class="upload-hint">หรือลากไฟล์มาวางที่นี่</div>
+                        <div class="upload-hint">รองรับไฟล์: .xlsx, .xls</div>
+                        
+                        <input type="file" 
+                               name="file" 
+                               accept=".xlsx,.xls" 
+                               style="display: none;" 
+                               id="fileInput" 
+                               required>
+                    </div>
+
+                    <div class="file-info" id="fileInfo">
+                        <h4>📄 ข้อมูลไฟล์:</h4>
+                        <p id="fileName"></p>
+                        <p id="fileSize"></p>
+                        <p id="fileType"></p>
+                    </div>
+
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn" id="uploadBtn">
+                            📤 Upload Excel
+                            <span class="loading" id="uploadLoading"></span>
+                        </button>
+                        <a href="/download_template" class="btn btn-success">📥 ดาวน์โหลด Template</a>
+                        <a href="/admin" class="btn btn-secondary">🔙 กลับ Dashboard</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Requirements -->
+            <div class="requirements">
+                <h4>⚠️ ข้อกำหนดของไฟล์ Excel:</h4>
+                <ul>
+                    <li>ไฟล์ต้องเป็นนามสกุล .xlsx หรือ .xls เท่านั้น</li>
+                    <li>ต้องมีคอลัมน์ "question" และ "answer"</li>
+                    <li>แถวแรกต้องเป็น header (ชื่อคอลัมน์)</li>
+                    <li>ข้อมูลต้องไม่เป็นค่าว่าง</li>
+                    <li>ขนาดไฟล์ไม่เกิน 10MB</li>
+                    <li>จำนวนแถวไม่เกิน 1,000 คำถาม</li>
+                </ul>
+            </div>
+
+            <!-- Template Section -->
+            <div class="template-section">
+                <h3>📋 รูปแบบไฟล์ Excel ที่ถูกต้อง</h3>
+                
+                <div class="template-preview">
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>question</th>
+                                <th>answer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>สวัสดี</td>
+                                <td>สวัสดีครับ! ยินดีต้อนรับสู่ระบบ</td>
+                            </tr>
+                            <tr>
+                                <td>คอร์สเรียนมีอะไรบ้าง</td>
+                                <td>เรามีคอร์สหลากหลาย เช่น Python, Web Development, Data Science</td>
+                            </tr>
+                            <tr>
+                                <td>ราคาคอร์สเท่าไหร่</td>
+                                <td>ราคาเริ่มต้นที่ 2,500 บาท ขึ้นอยู่กับหลักสูตร</td>
+                            </tr>
+                            <tr>
+                                <td>วิธีการสมัครเรียน</td>
+                                <td>สามารถสมัครได้ผ่านเว็บไซต์ หรือติดต่อเจ้าหน้าที่</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Tips:</strong>
+                    <ul style="margin: 0.5rem 0 0 1rem;">
+                        <li>ใช้ข้อความที่เข้าใจง่ายและชัดเจน</li>
+                        <li>สามารถใช้ \n เพื่อขึ้นบรรทัดใหม่ในคำตอบ</li>
+                        <li>ทดสอบไฟล์ขนาดเล็กก่อนอัปโหลดไฟล์ใหญ่</li>
+                        <li>ตรวจสอบการใช้ภาษาไทยให้ถูกต้อง</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // File upload handling
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileType = document.getElementById('fileType');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadLoading = document.getElementById('uploadLoading');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+
+        // Click to select file
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop events
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Handle file selection
+        function handleFile(file) {
+            // Validate file type
+            const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+            const allowedExtensions = ['.xlsx', '.xls'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                alert('❌ กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls) เท่านั้น');
+                return;
+            }
+
+            // Validate file size (10MB limit)
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                alert('❌ ขนาดไฟล์เกิน 10MB กรุณาเลือกไฟล์ที่เล็กกว่า');
+                return;
+            }
+
+            // Update UI
+            fileInput.files = createFileList(file);
+            displayFileInfo(file);
+            updateUploadArea(file);
+        }
+
+        // Create FileList from File
+        function createFileList(file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            return dt.files;
+        }
+
+        // Display file information
+        function displayFileInfo(file) {
+            fileName.textContent = `📄 ชื่อไฟล์: ${file.name}`;
+            fileSize.textContent = `📏 ขนาด: ${formatFileSize(file.size)}`;
+            fileType.textContent = `📋 ประเภท: ${file.type || 'Excel file'}`;
+            fileInfo.classList.add('show');
+        }
+
+        // Update upload area appearance
+        function updateUploadArea(file) {
+            fileUploadArea.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <div class="upload-text">ไฟล์พร้อมสำหรับอัปโหลด</div>
+                <div class="upload-hint">${file.name}</div>
+                <div class="upload-hint">คลิกเพื่อเปลี่ยนไฟล์</div>
+            `;
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Form submission
+        uploadForm.addEventListener('submit', function(e) {
+            const categorySelect = document.getElementById('category_id');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Validate form
+            if (!categorySelect.value) {
+                alert('❌ กรุณาเลือกหมวดหมู่');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!fileInput.files.length) {
+                alert('❌ กรุณาเลือกไฟล์ Excel');
+                e.preventDefault();
+                return;
+            }
+            
+            // Show loading
+            uploadBtn.disabled = true;
+            uploadLoading.classList.add('show');
+            uploadBtn.innerHTML = '⏳ กำลังอัปโหลด... <span class="loading show"></span>';
+            
+            // Show progress bar
+            progressBar.style.display = 'block';
+            simulateProgress();
+        });
+
+        // Simulate upload progress
+        function simulateProgress() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 90) {
+                    clearInterval(interval);
+                }
+            }, 200);
+        }
+
+        // Category validation
+        document.getElementById('category_id').addEventListener('change', function() {
+            if (this.value) {
+                this.style.borderColor = '#28a745';
+            } else {
+                this.style.borderColor = '#e1e5e9';
+            }
+        });
+
+        // Reset form function
+        function resetForm() {
+            uploadForm.reset();
+            fileInfo.classList.remove('show');
+            progressBar.style.display = 'none';
+            progressFill.style.width = '0%';
+            
+            fileUploadArea.innerHTML = `
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">คลิกเพื่อเลือกไฟล์ Excel</div>
+                <div class="upload-hint">หรือลากไฟล์มาวางที่นี่</div>
+                <div class="upload-hint">รองรับไฟล์: .xlsx, .xls</div>
+            `;
+            
+            uploadBtn.disabled = false;
+            uploadLoading.classList.remove('show');
+            uploadBtn.innerHTML = '📤 Upload Excel';
+        }
+
+        // Console info
+        console.log('📊 Upload Excel Page Loaded');
+        console.log('📁 Supported formats: .xlsx, .xls');
+        console.log('📏 Max file size: 10MB');
+        console.log('🚂 Railway Platform Ready');
+    </script>
+</body>
+</html>

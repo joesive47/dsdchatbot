@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการคำถาม - DSD Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 1rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .search-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            padding: 0.8rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .questions-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .question-cell {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .answer-cell {
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+
+        .category-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .stats-bar {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+
+        .pagination a {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .pagination a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination .active {
+            background: #667eea;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state img {
+            width: 100px;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            .question-cell, .answer-cell {
+                max-width: 200px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <h1>📝 จัดการคำถาม</h1>
+            <a href="/admin" class="btn btn-secondary">🏠 กลับ Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-content">
+            <a href="/admin">🏠 Dashboard</a> > 📝 จัดการคำถาม
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <form method="GET" class="search-form">
+                <div class="form-group">
+                    <label for="search">🔍 ค้นหาคำถาม:</label>
+                    <input type="text" 
+                           id="search" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="พิมพ์คำที่ต้องการค้นหา..."
+                           value="{{ search or '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="category">📁 หมวดหมู่:</label>
+                    <select id="category" name="category" class="form-control">
+                        <option value="all">ทั้งหมด</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" 
+                                {% if category_filter == category.id|string %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">🔍 ค้นหา</button>
+                <a href="/questions" class="btn btn-secondary">🔄 Reset</a>
+            </form>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div>
+                <strong>📊 พบ {{ questions|length }} คำถาม</strong>
+                {% if search %}จากการค้นหา "{{ search }}"{% endif %}
+                {% if category_filter != 'all' %}
+                    ในหมวดหมู่ 
+                    {% for cat in categories %}
+                        {% if cat.id|string == category_filter %}{{ cat.name }}{% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div>
+                <a href="/export_questions" class="btn btn-sm">📤 Export CSV</a>
+                <a href="/admin" class="btn btn-sm btn-secondary">➕ เพิ่มคำถามใหม่</a>
+            </div>
+        </div>
+
+        <!-- Questions Table -->
+        <div class="questions-table">
+            {% if questions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>📁 หมวดหมู่</th>
+                        <th>❓ คำถาม</th>
+                        <th>💬 คำตอบ</th>
+                        <th>⚙️ จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for question in questions %}
+                    <tr>
+                        <td>
+                            <span class="category-badge">{{ question.category_name }}</span>
+                        </td>
+                        <td class="question-cell">
+                            <strong>{{ question.question }}</strong>
+                        </td>
+                        <td class="answer-cell">
+                            {{ question.answer[:100] }}
+                            {% if question.answer|length > 100 %}...{% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/edit_question/{{ question.id }}" 
+                                   class="btn btn-sm">✏️ แก้ไข</a>
+                                <form method="POST" 
+                                      action="/delete_question/{{ question.id }}" 
+                                      style="display: inline;"
+                                      onsubmit="return confirm('⚠️ ต้องการลบคำถามนี้ใช่หรือไม่?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">🗑️ ลบ</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📝</div>
+                <h3>ไม่พบคำถาม</h3>
+                <p>
+                    {% if search or category_filter != 'all' %}
+                        ไม่พบคำถามที่ตรงกับเงื่อนไขการค้นหา
+                    {% else %}
+                        ยังไม่มีคำถามในระบบ
+                    {% endif %}
+                </p>
+                <div style="margin-top: 1.5rem;">
+                    {% if search or category_filter != 'all' %}
+                        <a href="/questions" class="btn">🔄 ดูทั้งหมด</a>
+                    {% endif %}
+                    <a href="/admin" class="btn">➕ เพิ่มคำถามใหม่</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sample Questions for Demo -->
+        {% if not questions and not search and category_filter == 'all' %}
+        <div style="background: white; padding: 2rem; border-radius: 10px; margin-top: 2rem;">
+            <h3>🧪 ตัวอย่างคำถามสำหรับทดสอบ</h3>
+            <p>คลิกปุ่มด้านล่างเพื่อเพิ่มคำถามตัวอย่าง:</p>
+            <div style="margin-top: 1rem;">
+                <button onclick="addSampleQuestions()" class="btn">🎯 เพิ่มคำถามตัวอย่าง</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add sample questions for demo
+        async function addSampleQuestions() {
+            if (!confirm('🎯 เพิ่มคำถามตัวอย่างสำหรับทดสอบระบบ?')) {
+                return;
+            }
+
+            const sampleQuestions = [
+                {
+                    category_id: 1,
+                    question: 'Railway ทดสอบ',
+                    answer: 'ยอดเยี่ยม! Railway ทำงานได้ปกติ 🚂 ไม่มี cold start และตอบสนองเร็วมาก!'
+                },
+                {
+                    category_id: 2,
+                    question: 'คอร์สเรียน Python',
+                    answer: 'เรามีคอร์ส Python ตั้งแต่ระดับพื้นฐานไปจนถึงขั้นสูง รวมถึง Data Science และ Web Development'
+                },
+                {
+                    category_id: 4,
+                    question: 'ชำระเงินอย่างไร',
+                    answer: 'สามารถชำระเงินได้หลายช่องทาง:\n- โอนเงินธนาคาร\n- บัตรเครดิต/เดบิต\n- QR Code PromptPay\n- เงินสด (ที่สาขา)'
+                }
+            ];
+
+            try {
+                for (const q of sampleQuestions) {
+                    const formData = new FormData();
+                    formData.append('category_id', q.category_id);
+                    formData.append('question', q.question);
+                    formData.append('answer', q.answer);
+
+                    await fetch('/add_question', {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                alert('✅ เพิ่มคำถามตัวอย่างเรียบร้อยแล้ว!');
+                location.reload();
+            } catch (error) {
+                alert('❌ เกิดข้อผิดพลาด: ' + error.message);
+            }
+        }
+
+        // Auto-submit search form on category change
+        document.getElementById('category').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        // Highlight search terms
+        function highlightSearch() {
+            const searchTerm = "{{ search or '' }}";
+            if (searchTerm) {
+                const questionCells = document.querySelectorAll('.question-cell');
+                questionCells.forEach(cell => {
+                    const content = cell.innerHTML;
+                    const highlighted = content.replace(
+                        new RegExp(searchTerm, 'gi'),
+                        '<mark style="background: yellow;">$&</mark>'
+                    );
+                    cell.innerHTML = highlighted;
+                });
+            }
+        }
+
+        // Run highlight on page load
+        document.addEventListener('DOMContentLoaded', highlightSearch);
+
+        // Console info
+        console.log('📝 Questions Management Page Loaded');
+        console.log('🔍 Search active:', "{{ search or 'None' }}");
+        console.log('📁 Category filter:', "{{ category_filter or 'all' }}");
+        console.log('📊 Questions found:', {{ questions|length }});
+    </script>
+</body>
+</html>

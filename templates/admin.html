@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - DSD Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .admin-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .admin-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9ff;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .file-upload-area:hover {
+            background: #f0f4ff;
+        }
+
+        .file-upload-area.dragover {
+            background: #e8f0fe;
+            border-color: #4285f4;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .railway-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sample-data {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .admin-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <h1>⚙️ Admin Dashboard</h1>
+            <div class="user-info">
+                <span>👤 Admin User</span>
+                <a href="/logout" class="btn-logout">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Railway Status -->
+        <div class="railway-info">
+            <h3>🚂 Railway Platform Status</h3>
+            <p>✅ System Online • 🔄 Auto-deploy Active • 🌏 Global CDN</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success">
+                        ✅ {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalQuestions">{{ total_questions or 0 }}</div>
+                <div class="stat-label">📝 Total Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalCategories">{{ total_categories or 0 }}</div>
+                <div class="stat-label">📁 Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">🚂 Railway Uptime</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0ms</div>
+                <div class="stat-label">⚡ Cold Start Time</div>
+            </div>
+        </div>
+
+        <!-- Admin Sections -->
+        <div class="admin-sections">
+            <!-- Add Category -->
+            <div class="admin-card">
+                <h3>📁 เพิ่มหมวดหมู่ใหม่</h3>
+                <form method="POST" action="/add_category">
+                    <div class="form-group">
+                        <label for="category_name">ชื่อหมวดหมู่:</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="category_name" 
+                               name="category_name" 
+                               placeholder="เช่น: คอร์สเรียน, ราคา, การติดต่อ"
+                               required>
+                    </div>
+                    <button type="submit" class="btn">➕ เพิ่มหมวดหมู่</button>
+                </form>
+
+                <div class="sample-data">
+                    <strong>ตัวอย่างหมวดหมู่:</strong><br>
+                    • ทั่วไป<br>
+                    • คอร์สเรียน<br>
+                    • ราคาและการชำระเงิน<br>
+                    • การติดต่อ
+                </div>
+            </div>
+
+            <!-- Upload Excel -->
+            <div class="admin-card">
+                <h3>📊 Import ข้อมูลจาก Excel</h3>
+                <form method="POST" action="/upload_excel" enctype="multipart/form-data" id="uploadForm">
+                    <div class="form-group">
+                        <label for="category_id">เลือกหมวดหมู่:</label>
+                        <select class="form-control" name="category_id" required>
+                            <option value="">-- เลือกหมวดหมู่ --</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div>📁 คลิกเพื่อเลือกไฟล์ Excel หรือลากมาวางที่นี่</div>
+                        <input type="file" 
+                               name="file" 
+                               accept=".xlsx,.xls" 
+                               style="display: none;" 
+                               id="fileInput" 
+                               required>
+                        <div id="fileName" style="margin-top: 10px; font-weight: bold; color: #667eea;"></div>
+                    </div>
+
+                    <button type="submit" class="btn">📤 Upload Excel</button>
+                    <a href="/download_template" class="btn btn-secondary">📥 ดาวน์โหลด Template</a>
+                </form>
+
+                <div class="sample-data">
+                    <strong>รูปแบบไฟล์ Excel:</strong><br>
+                    | question | answer |<br>
+                    | สวัสดี | สวัสดีครับ! |<br>
+                    | คอร์สมีอะไรบ้าง | เรามีคอร์ส... |
+                </div>
+            </div>
+
+            <!-- Add Single Question -->
+            <div class="admin-card">
+                <h3>❓ เพิ่มคำถามเดี่ยว</h3>
+                <form method="POST" action="/add_question">
+                    <div class="form-group">
+                        <label for="question_category">หมวดหมู่:</label>
+                        <select class="form-control" name="category_id" required>
+                            <option value="">-- เลือกหมวดหมู่ --</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question">คำถาม:</label>
+                        <input type="text" 
+                               class="form-control" 
+                               name="question" 
+                               placeholder="เช่น: ราคาคอร์สเท่าไหร่"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="answer">คำตอบ:</label>
+                        <textarea class="form-control" 
+                                  name="answer" 
+                                  rows="4" 
+                                  placeholder="เช่น: คอร์สพื้นฐาน 2,500 บาท..."
+                                  required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">✅ เพิ่มคำถาม</button>
+                </form>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="admin-card">
+                <h3>⚡ Quick Actions</h3>
+                <div class="quick-actions">
+                    <a href="/questions" class="btn">📋 จัดการคำถาม</a>
+                    <a href="/api/stats" class="btn btn-secondary">📊 ดูสถิติ</a>
+                    <a href="/export_questions" class="btn btn-success">📤 Export CSV</a>
+                    <a href="/api/health" class="btn btn-secondary">🔍 API Status</a>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <h4>🚂 Railway Commands:</h4>
+                    <div class="sample-data">
+                        • Auto-deploy: ทุกครั้งที่ push GitHub<br>
+                        • Logs: ดูได้ใน Railway Dashboard<br>
+                        • Scale: อัตโนมัติตาม traffic<br>
+                        • Database: PostgreSQL พร้อมใช้งาน
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="admin-card">
+                <h3>🖥️ System Information</h3>
+                <div class="sample-data">
+                    <strong>🚂 Railway Info:</strong><br>
+                    Platform: Railway Cloud<br>
+                    Region: Asia Southeast<br>
+                    Auto-deploy: ✅ Active<br>
+                    SSL/HTTPS: ✅ Enabled<br>
+                    <br>
+                    <strong>🐍 Python Info:</strong><br>
+                    Flask: Latest<br>
+                    Database: SQLite/PostgreSQL<br>
+                    CORS: ✅ Enabled<br>
+                    <br>
+                    <strong>📡 API Endpoints:</strong><br>
+                    • GET /api/health<br>
+                    • POST /api/chat<br>
+                    • GET /api/stats<br>
+                </div>
+
+                <div class="quick-actions">
+                    <button onclick="testAPI()" class="btn">🧪 Test API</button>
+                    <button onclick="refreshStats()" class="btn btn-secondary">🔄 Refresh Stats</button>
+                </div>
+                
+                <div id="apiTestResult" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Database Management -->
+            <div class="admin-card">
+                <h3>🗄️ Database Management</h3>
+                <p>จัดการฐานข้อมูลคำถาม-คำตอบ</p>
+                
+                <div class="quick-actions">
+                    <a href="/questions" class="btn">📝 Edit Questions</a>
+                    <button onclick="backupData()" class="btn btn-secondary">💾 Backup</button>
+                    <button onclick="clearLogs()" class="btn btn-danger">🗑️ Clear Logs</button>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <small>⚠️ การใช้งาน Railway:</small>
+                    <div class="sample-data">
+                        • Free tier: 500h/month<br>
+                        • Database: PostgreSQL ฟรี<br>
+                        • Traffic: Unlimited<br>
+                        • Storage: 1GB
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // File upload handling
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+
+        fileUploadArea.addEventListener('click', () => fileInput.click());
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileName.textContent = `📁 Selected: ${files[0].name}`;
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileName.textContent = `📁 Selected: ${e.target.files[0].name}`;
+            }
+        });
+
+        // API Testing
+        async function testAPI() {
+            const resultDiv = document.getElementById('apiTestResult');
+            resultDiv.innerHTML = '<p style="color: #667eea;">🔄 Testing API...</p>';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
+                            <strong>✅ API Test Success!</strong><br>
+                            Status: ${data.status}<br>
+                            Environment: ${data.environment || 'Unknown'}<br>
+                            No Cold Start: ${data.railway_info?.no_cold_start ? '✅' : '❌'}
+                        </div>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
+                        <strong>❌ API Test Failed!</strong><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Refresh Stats
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('totalQuestions').textContent = data.total_questions || 0;
+                    document.getElementById('totalCategories').textContent = data.total_categories || 0;
+                    
+                    alert('✅ Stats refreshed successfully!');
+                } else {
+                    alert('❌ Failed to refresh stats');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+
+        // Backup Data
+        function backupData() {
+            if (confirm('💾 Export all questions as CSV backup?')) {
+                window.location.href = '/export_questions';
+            }
+        }
+
+        // Clear Logs (placeholder)
+        function clearLogs() {
+            if (confirm('🗑️ Clear application logs? This cannot be undone.')) {
+                alert('ℹ️ Log clearing not implemented in demo version');
+            }
+        }
+
+        // Auto-refresh stats every 5 minutes
+        setInterval(refreshStats, 300000);
+
+        // Console info
+        console.log('⚙️ Admin Dashboard Loaded');
+        console.log('🚂 Railway Platform Active');
+        console.log('📊 Auto-refresh: Every 5 minutes');
+        console.log('🔧 Available functions: testAPI(), refreshStats(), backupData()');
+    </script>
+</body>
+</html>

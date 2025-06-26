@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSD Chatbot - Railway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin: 5px;
+        }
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .endpoint-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+        .endpoint-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            transition: transform 0.3s;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .status-good {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .railway-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚂 DSD Chatbot API</h1>
+            <p>ขับเคลื่อนโดย Railway Cloud Platform</p>
+            <div>
+                <span class="badge">✅ No Cold Start</span>
+                <span class="badge">🚀 Always Fast</span>
+                <span class="badge">🔒 HTTPS Ready</span>
+                <span class="badge">🌏 Global CDN</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="railway-info">
+                <h3>🚂 Railway Status</h3>
+                <p><span class="status-good">✅ ONLINE</span> - ระบบทำงานปกติบน Railway</p>
+                <p><strong>Environment:</strong> Production</p>
+                <p><strong>Region:</strong> Asia Southeast</p>
+                <p><strong>Deployment:</strong> Auto-deploy from GitHub</p>
+            </div>
+
+            <div class="endpoint-card">
+                <h3>🔗 API Endpoints</h3>
+                <p><strong>Base URL:</strong> <code id="baseUrl">https://your-app.railway.app</code></p>
+                <div style="margin: 15px 0;">
+                    <a href="/api/health" class="test-button">GET /api/health</a>
+                    <a href="/api/stats" class="test-button">GET /api/stats</a>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <h3>💬 Chat API Testing</h3>
+                <p>ทดสอบ POST /api/chat ด้วย JSON:</p>
+                <div class="code-block">
+{
+  "message": "สวัสดี",
+  "user_id": "test_user",
+  "session_id": "test_session"
+}
+                </div>
+                <button onclick="testChatAPI()" class="test-button">🧪 ทดสอบ Chat API</button>
+                <div id="chatResult" style="margin-top: 15px;"></div>
+            </div>
+
+            <div class="endpoint-card">
+                <h3>📋 คำถามตัวอย่าง</h3>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li style="margin: 8px 0;">💬 "สวัสดี" - ทักทาย</li>
+                    <li style="margin: 8px 0;">📚 "คอร์สเรียนมีอะไรบ้าง" - ดูคอร์ส</li>
+                    <li style="margin: 8px 0;">💰 "ราคาคอร์สเท่าไหร่" - ดูราคา</li>
+                    <li style="margin: 8px 0;">🚂 "railway ทดสอบ" - ทดสอบ Railway</li>
+                    <li style="margin: 8px 0;">📞 "ติดต่อเจ้าหน้าที่" - ข้อมูลติดต่อ</li>
+                </ul>
+            </div>
+
+            <div class="endpoint-card">
+                <h3>🔧 Integration Guide</h3>
+                <p>สำหรับเชื่อมต่อจาก PHP Frontend:</p>
+                <div class="code-block">
+// PHP Code
+$api_url = 'https://your-app.railway.app/api/chat';
+$data = json_encode([
+    'message' => 'สวัสดี',
+    'user_id' => 'php_user',
+    'session_id' => session_id()
+]);
+
+$response = curl_post($api_url, $data);
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // อัปเดต Base URL อัตโนมัติ
+        document.getElementById('baseUrl').textContent = window.location.origin;
+
+        async function testChatAPI() {
+            const resultDiv = document.getElementById('chatResult');
+            resultDiv.innerHTML = '<p style="color: #667eea;">🔄 กำลังทดสอบ...</p>';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: 'railway ทดสอบ',
+                        user_id: 'web_test',
+                        session_id: 'web_test_session'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px;">
+                            <h4>✅ API Response:</h4>
+                            <p><strong>Message:</strong> ${data.response}</p>
+                            <p><strong>Processing Time:</strong> ${data.processing_time_ms}ms</p>
+                            <p><strong>Railway Status:</strong> ${data.railway_info?.no_cold_start ? 'No Cold Start ✅' : 'Standard'}</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px;">
+                        <h4>❌ Error:</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // แสดงข้อมูล Browser
+        console.log('🚂 DSD Chatbot API on Railway');
+        console.log('📡 Base URL:', window.location.origin);
+        console.log('🔗 Test endpoints manually or click the buttons above');
+    </script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขคำถาม - DSD Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .edit-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .preview-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .chat-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .user-message {
+            background: #667eea;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            max-width: 70%;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #f1f3f4;
+            color: #333;
+            padding: 0.8rem;
+            border-radius: 15px;
+            max-width: 70%;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .character-count {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: right;
+            margin-top: 0.3rem;
+        }
+
+        .character-count.warning {
+            color: #ffc107;
+        }
+
+        .character-count.danger {
+            color: #dc3545;
+        }
+
+        .tips {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .tips h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .tips ul {
+            margin-left: 1.5rem;
+            color: #666;
+        }
+
+        .tips li {
+            margin-bottom: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .edit-card {
+                padding: 1.5rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="edit-card">
+            <div class="header">
+                <h1>✏️ แก้ไขคำถาม</h1>
+                <div class="breadcrumb">
+                    <a href="/admin">🏠 Dashboard</a> > 
+                    <a href="/questions">📝 จัดการคำถาม</a> > 
+                    ✏️ แก้ไข
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success">
+                            ✅ {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if question %}
+            <!-- Edit Form -->
+            <form method="POST" id="editForm">
+                <div class="form-group">
+                    <label for="category_id">📁 หมวดหมู่:</label>
+                    <select class="form-control" name="category_id" id="category_id" required>
+                        <option value="">-- เลือกหมวดหมู่ --</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" 
+                                {% if category.id == question.category_id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="question">❓ คำถาม:</label>
+                    <input type="text" 
+                           class="form-control" 
+                           name="question" 
+                           id="question"
+                           value="{{ question.question }}"
+                           placeholder="เช่น: ราคาคอร์สเท่าไหร่"
+                           maxlength="500"
+                           required>
+                    <div class="character-count" id="questionCount">0/500</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="answer">💬 คำตอบ:</label>
+                    <textarea class="form-control" 
+                              name="answer" 
+                              id="answer"
+                              placeholder="เช่น: คอร์สพื้นฐาน 2,500 บาท, คอร์สขั้นกลาง 5,000 บาท..."
+                              maxlength="2000"
+                              required>{{ question.answer }}</textarea>
+                    <div class="character-count" id="answerCount">0/2000</div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn">💾 บันทึกการแก้ไข</button>
+                    <a href="/questions" class="btn btn-secondary">🔙 ยกเลิก</a>
+                    <button type="button" 
+                            onclick="deleteQuestion()" 
+                            class="btn btn-danger">🗑️ ลบคำถาม</button>
+                </div>
+            </form>
+
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <h3>👀 ตัวอย่างการแสดงผล</h3>
+                <div class="chat-preview" id="chatPreview">
+                    <div class="user-message" id="previewQuestion">
+                        {{ question.question }}
+                    </div>
+                    <div class="bot-message" id="previewAnswer">
+                        {{ question.answer }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="tips">
+                <h4>💡 คำแนะนำในการแก้ไขคำถาม</h4>
+                <ul>
+                    <li>ใช้คำถามที่ชัดเจนและเข้าใจง่าย</li>
+                    <li>คำตอบควรครบถ้วนและมีประโยชน์</li>
+                    <li>สามารถใช้ \n เพื่อขึ้นบรรทัดใหม่</li>
+                    <li>ใช้ emoji เพื่อให้น่าสนใจ 😊</li>
+                    <li>ทดสอบคำถาม-คำตอบผ่าน API หลังจากบันทึก</li>
+                </ul>
+            </div>
+
+            {% else %}
+            <!-- Question Not Found -->
+            <div class="alert alert-danger">
+                ❌ ไม่พบคำถามที่ต้องการแก้ไข
+            </div>
+            <div class="actions">
+                <a href="/questions" class="btn">🔙 กลับไปจัดการคำถาม</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Character counters
+        function updateCharacterCount(inputId, countId, maxLength) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(countId);
+            
+            function updateCount() {
+                const length = input.value.length;
+                counter.textContent = `${length}/${maxLength}`;
+                
+                // Color coding
+                counter.className = 'character-count';
+                if (length > maxLength * 0.9) {
+                    counter.className += ' danger';
+                } else if (length > maxLength * 0.7) {
+                    counter.className += ' warning';
+                }
+            }
+            
+            input.addEventListener('input', updateCount);
+            updateCount(); // Initial count
+        }
+
+        // Initialize character counters
+        updateCharacterCount('question', 'questionCount', 500);
+        updateCharacterCount('answer', 'answerCount', 2000);
+
+        // Live preview
+        function updatePreview() {
+            const questionInput = document.getElementById('question');
+            const answerInput = document.getElementById('answer');
+            const previewQuestion = document.getElementById('previewQuestion');
+            const previewAnswer = document.getElementById('previewAnswer');
+            
+            function update() {
+                previewQuestion.textContent = questionInput.value || 'คำถามตัวอย่าง';
+                previewAnswer.innerHTML = (answerInput.value || 'คำตอบตัวอย่าง').replace(/\n/g, '<br>');
+            }
+            
+            questionInput.addEventListener('input', update);
+            answerInput.addEventListener('input', update);
+        }
+
+        // Initialize preview
+        updatePreview();
+
+        // Delete question
+        function deleteQuestion() {
+            const questionText = document.getElementById('question').value;
+            const confirmMessage = `⚠️ ต้องการลบคำถาม "${questionText}" ใช่หรือไม่?\n\nการลบไม่สามารถยกเลิกได้`;
+            
+            if (confirm(confirmMessage)) {
+                // Create and submit delete form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/delete_question/{{ question.id if question else "" }}';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Form validation
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            const question = document.getElementById('question').value.trim();
+            const answer = document.getElementById('answer').value.trim();
+            const category = document.getElementById('category_id').value;
+            
+            if (!question) {
+                alert('❌ กรุณากรอกคำถาม');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!answer) {
+                alert('❌ กรุณากรอกคำตอบ');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!category) {
+                alert('❌ กรุณาเลือกหมวดหมู่');
+                e.preventDefault();
+                return;
+            }
+            
+            // Confirm save
+            if (confirm('💾 บันทึกการแก้ไขคำถามนี้ใช่หรือไม่?')) {
+                // Show loading
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⏳ กำลังบันทึก...';
+            } else {
+                e.preventDefault();
+            }
+        });
+
+        // Auto-save draft to localStorage (for backup)
+        function saveDraft() {
+            const draft = {
+                question: document.getElementById('question').value,
+                answer: document.getElementById('answer').value,
+                category_id: document.getElementById('category_id').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem('editDraft_{{ question.id if question else "new" }}', JSON.stringify(draft));
+            } catch (e) {
+                // localStorage not available
+            }
+        }
+
+        // Save draft every 30 seconds
+        setInterval(saveDraft, 30000);
+
+        // Save draft on input changes
+        ['question', 'answer', 'category_id'].forEach(id => {
+            document.getElementById(id).addEventListener('input', saveDraft);
+        });
+
+        // Console info
+        console.log('✏️ Edit Question Page Loaded');
+        console.log('📝 Question ID:', {{ question.id if question else 'null' }});
+        console.log('💾 Auto-save: Every 30 seconds');
+        console.log('👀 Live preview: Active');
+    </script>
+</body>
+</html>
